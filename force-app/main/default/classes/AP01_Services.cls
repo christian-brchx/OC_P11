@@ -11,4 +11,18 @@ public class AP01_Services {
         }
         return idOrdInError;
     }
+
+    public static void checkDeleteOrders (Set<Id> idAccounts) {
+        List<Account> accounts = [SELECT Id, Name, (SELECT Id FROM Orders) FROM Account WHERE Id IN :idAccounts];
+        List<Account> accToDeactivate = new List<Account>();
+        for (Account acc : accounts) {
+            // No order on the account ?
+            if (acc.Orders.size() == 0) {
+                acc.Active__c = false;
+                accToDeactivate.add(acc);
+            }
+        }
+        update accToDeactivate;
+    }
+
 }

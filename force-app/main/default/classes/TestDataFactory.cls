@@ -1,7 +1,8 @@
 @isTest
 public class TestDataFactory {
-    public static Account createAccount(String name) {
+    public static Account createAccountActivated(String name) {
         Account a = new Account(Name=name, Phone = '0000000000');
+        a.Active__c = true;
         insert a;
         return a;
     }

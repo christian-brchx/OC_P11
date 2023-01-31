@@ -3,7 +3,7 @@ private class OrderTrigger_Test {
 
     @testSetup static void createData() {
         // create one account with a CA of 0
-        Account acc = TestDataFactory.createAccount('Test Account');
+        Account acc = TestDataFactory.createAccountActivated('Test Account');
  
         // Insert a test product.
         Id prodId = TestDataFactory.createTestProduct('Chemise Verte longue XYX', 'Chemise');
@@ -79,4 +79,21 @@ private class OrderTrigger_Test {
 
     }
 
+    @isTest static void DeleteAllOrdersMustDeactivateTheAccount() {
+        // Get the account
+        Account acc = [SELECT Id, Name, Active__c FROM Account WHERE Name = 'Test Account' LIMIT 1];
+        System.debug('DeleteAllOrdersMustDeactivateTheAccount Active__c = ' + acc.Active__c);
+        // Get all the orders of the account
+        List<Order> ords = [SELECT Id FROM Order WHERE AccountId = :acc.Id];
+
+        Test.startTest();
+        delete ords;
+        Test.stopTest();
+        
+        // Verify 
+        // In this case the account must be deactivated
+        Account accToCheck = [SELECT Id, Name, Active__c FROM Account WHERE Name = 'Test Account' LIMIT 1];
+        System.debug('DeleteAllOrdersMustDeactivateTheAccount Active__c = ' + accToCheck.Active__c);
+        System.assert(!accToCheck.Active__c,'Le compte ' + accToCheck.Name + ' devrait être désactivé');
+    }
 }

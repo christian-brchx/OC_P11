@@ -13,5 +13,10 @@ trigger OrderTrigger on Order (before update, after delete) {
     }
     else if (Trigger.isDelete) {
         // Process after delete
+        Set<Id> accountsToCheck = new Set<Id>();
+        for (Order ord : trigger.old) {
+            accountsToCheck.add(ord.AccountId);
+        }
+        AP01_Services.checkDeleteOrders(accountsToCheck);
     }
 }
