@@ -41,7 +41,9 @@ private class OrderTrigger_Test {
         System.assertEquals(2,results.size(),'Deux résultats doivent avoir été retournés');
         for (Database.SaveResult sr : results) {
             System.assert(!sr.isSuccess(),'La mise à jour de la commande doit avoir échoué');
-            System.assert(sr.getErrors().size() > 0,'Une erreur doit avoir été retournée');
+            System.assert(sr.getErrors().size() == 1,'Une erreur doit avoir été retournée');
+	        System.assertEquals('Vous devez ajouter un produit pour activer la commande',
+	                             sr.getErrors()[0].getMessage());
         }
         List<Order> checkOrders = [SELECT Id, Name, Status FROM Order WHERE Name LIKE 'Commande sans produit%'];
         for (Order ord : checkOrders) {

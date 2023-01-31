@@ -2,13 +2,14 @@ trigger OrderTrigger on Order (before update, after delete) {
     if (Trigger.isUpdate) {
         List<Order> ordersToCheck = new List<Order>();
         for (Order ord :trigger.new) {
-            System.debug('OrderTrigger NewOrder :' + ord.Name + ' Status : ' + ord.Status);
-            System.debug('OrderTrigger OldOrder :' + trigger.oldMap.get(ord.Id).Name + ' Status : ' + trigger.oldMap.get(ord.Id).Status);
             if (ord.Status == 'Activated' && trigger.oldMap.get(ord.Id).Status == 'Draft' ) {
                 ordersToCheck.add(ord);
             }
         }
-        AP01_Services.checkUpdateOrders(new Map<Id,Order>(ordersToCheck));
+        Set<Id> idOrdInError = AP01_Services.checkUpdateOrders(new Map<Id,Order>(ordersToCheck));
+        for (Id idOrd : idOrdInError) {
+            trigger.newMap.get(idOrd).addError('Vous devez ajouter un produit pour activer la commande');
+        }
     }
     else if (Trigger.isDelete) {
         // Process after delete
