@@ -7,31 +7,42 @@ public class TestDataFactory {
         return a;
     }
 
-    public static List<Account> createAccountsWithOrders(Integer numAccounts, 
-                                                        String prefixName, 
-                                                        Integer amountOrder,
-                                                        Id priceBookId,
-                                                        Id pricebookEntryId) {
+    public static List<Account> createAccounts(Integer numAccounts, String prefixName) {
         List<Account> accounts = new List<Account>();
         for (Integer i=0 ; i<numAccounts ; i++) {
             Account acc = new Account(Name=prefixName+i, Phone = '0000000000'); 
             accounts.add(acc);
         }
         insert accounts;
+        return accounts;
+    }
+
+    public static List<Account> createAccountsWithOrders(Integer numAccounts, 
+                                                        String prefixName, 
+                                                        Integer amountOrder,
+                                                        Id priceBookId,
+                                                        Id pricebookEntryId) {
+
+        List<Account> accounts = createAccounts(numAccounts, prefixName);
         List<Order> orders = new List<Order>();  
-        for (Account acc :accounts){
+        for (Account acc : accounts){
             Order ord = new Order(Name = 'Commande ' + acc.Name, AccountId = acc.Id, EffectiveDate = Date.today(), 
                                     Status ='Draft', Pricebook2Id = priceBookId);
-            ord.ShipmentCost__c = 0;
             orders.add(ord);
         }
         insert orders;
+        return accounts;
+    }
 
-        List<OrderItem> orderItems = new List<OrderItem>();  
-        for (Order ord :orders) {
-            orderItems.add(new OrderItem (OrderId = ord.Id, Quantity=1, PricebookEntryId = pricebookEntryId, UnitPrice = amountOrder));
+    public static List<Account> createAccountsWithCallTask(Integer numAccounts, 
+                                                        String prefixName) {
+        List<Account> accounts = createAccounts(numAccounts, prefixName);
+        List<Task> tasks = new List<Task>();  
+        for (Account acc :accounts){
+            Task tsk = new Task(Type = 'Call ', WhatId = acc.Id, Description = 'Call test');
+            tasks.add(tsk);
         }
-        insert orderItems;
+        insert tasks;
         return accounts;
     }
 
