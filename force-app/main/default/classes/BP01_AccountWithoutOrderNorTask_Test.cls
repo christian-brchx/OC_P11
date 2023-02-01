@@ -23,6 +23,14 @@ private class BP01_AccountWithoutOrderNorTask_Test {
         ID batchprocessid = Database.executeBatch(new BP01_AccountWithoutOrderNorTask());
         Test.stopTest();
         // Get the Accounts updated
-        List<Task> taskToCreate = [SELECT Id, Subject, Status, Priority, ActivityDate FROM Task WHERE WhatId IN (SELECT Id FROM Account WHERE Name LIKE 'TestBatchAccountWithoutOrderNorTask%')];
-        System.assertEquals(20,taskToCreate.size(),'20 tâches doivent avoir été créées');
+        List<Task> taskCreated = [SELECT Id, Subject, Status, Priority, IsReminderSet, ReminderDateTime FROM Task WHERE WhatId IN (SELECT Id FROM Account WHERE Name LIKE 'TestBatchAccountWithoutOrderNorTask%')];
+        System.assertEquals(20,taskCreated.size(),'20 tâches doivent avoir été créées');
+        for (Task tsk : taskCreated) {
+            System.assertEquals('Call',tsk.Subject,'Le sujet de la tâche doit être call');
+            System.assertEquals('Not Started',tsk.Status,'Le statut doit être \'Not Started\'');
+            System.assertEquals('Normal',tsk.Priority,'La priorité doit être \'Normal\'');
+            System.assert(tsk.IsReminderSet,'Le rappel doit être activé');
+            System.assertEquals(Datetime.now().addDays(5).date(), tsk.ReminderDateTime.date(),'Le rappel doit être dans 5 jours');
+        }
+
     }}
