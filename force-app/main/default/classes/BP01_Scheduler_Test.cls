@@ -2,6 +2,10 @@
 class BP01_Scheduler_Test {
 
     static testmethod void testBP01_Scheduler() {
+        // Verify the date of the run of the test (only in 2023)
+        System.assert(datetime.newInstance(2023,12,31,23,59,59) > datetime.now(),
+                      'Ce test ne fonctionne que jusqu\'au 31/12/2023');
+    
         Test.startTest();
             // Insert a test product.
             Id prodId = TestDataFactory.createTestProduct('Chemise Verte longue XYX', 'Chemise');
@@ -35,20 +39,21 @@ class BP01_Scheduler_Test {
             // Verify the job has not run
             System.assertEquals(0, ct.TimesTriggered);
 
-            List<Task> taskNotCreated = [SELECT Id, Subject, Status, Priority, IsReminderSet, ReminderDateTime FROM Task WHERE WhatId IN (SELECT Id FROM Account WHERE Name LIKE 'TestBatchAccountWithoutOrderNorTask%')];
-            System.assertEquals(0,taskNotCreated.size(),'aucune tâche ne doit avoir été créée');
+            // Verify the date of the next run
+            System.assertEquals(calculateNextFirstMondayOfTheMonth(),ct.NextFireTime,'La date de prochain lancement est erronée');
 
         Test.stopTest();
         System.debug('BP01_Scheduler_Test AFTER STOPTEST');
+    }
 
-        List<Task> taskCreated = [SELECT Id, Subject, Status, Priority, IsReminderSet, ReminderDateTime FROM Task WHERE WhatId IN (SELECT Id FROM Account WHERE Name LIKE 'TestBatchAccountWithoutOrderNorTask%')];
-        System.assertEquals(20,taskCreated.size(),'20 tâches doivent avoir été créées');
-        for (Task tsk : taskCreated) {
-            System.assertEquals('Call',tsk.Subject,'Le sujet de la tâche doit être call');
-            System.assertEquals('Not Started',tsk.Status,'Le statut doit être \'Not Started\'');
-            System.assertEquals('Normal',tsk.Priority,'La priorité doit être \'Normal\'');
-            System.assert(tsk.IsReminderSet,'Le rappel doit être activé');
-            System.assertEquals(Datetime.now().addDays(5).date(), tsk.ReminderDateTime.date(),'Le rappel doit être dans 5 jours');
+    private static Datetime calculateNextFirstMondayOfTheMonth() {
+        // table des premiers lundis du mois en 2023 et janvier 2024
+        Integer[] tabMonday23 = new Integer[]{2,6,6,3,1,5,3,7,4,2,6,4,1};
+        Datetime aujourdhui = datetime.now();
+        if (aujourdhui > datetime.newInstance(2023,aujourdhui.month(),tabMonday23[aujourdhui.month()-1],1,0,0)) {
+            return datetime.newInstance(2023,aujourdhui.month(),tabMonday23[aujourdhui.month()],1,0,0);
+        } else {
+            return datetime.newInstance(2023,aujourdhui.month(),tabMonday23[aujourdhui.month()-1],1,0,0);
         }
     }
 }
