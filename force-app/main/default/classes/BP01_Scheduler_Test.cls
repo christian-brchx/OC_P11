@@ -51,7 +51,7 @@ class BP01_Scheduler_Test {
         Integer[] tabMonday23 = new Integer[]{2,6,6,3,1,5,3,7,4,2,6,4,1};
         Datetime aujourdhui = datetime.now();
         if (aujourdhui > datetime.newInstance(2023,aujourdhui.month(),tabMonday23[aujourdhui.month()-1],1,0,0)) {
-            return datetime.newInstance(2023,aujourdhui.month(),tabMonday23[aujourdhui.month()],1,0,0);
+            return datetime.newInstance(2023,aujourdhui.month()+1,tabMonday23[aujourdhui.month()],1,0,0);
         } else {
             return datetime.newInstance(2023,aujourdhui.month(),tabMonday23[aujourdhui.month()-1],1,0,0);
         }
