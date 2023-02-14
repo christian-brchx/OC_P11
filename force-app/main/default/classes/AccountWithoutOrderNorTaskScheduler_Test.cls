@@ -1,7 +1,7 @@
 @istest
-class BP01_Scheduler_Test {
+class AccountWithoutOrderNorTaskScheduler_Test {
 
-    static testmethod void testBP01_Scheduler() {
+    static testmethod void testAccountWithoutOrderNorTaskScheduler() {
         // Verify the date of the run of the test (only in 2023)
         System.assert(datetime.newInstance(2023,12,31,23,59,59) > datetime.now(),
                       'Ce test ne fonctionne que jusqu\'au 31/12/2023');
@@ -25,7 +25,9 @@ class BP01_Scheduler_Test {
 
             // Schedule the test job
 
-            String jobId = System.schedule('testBP01_Scheduler',BP01_Scheduler.CRON_EXP,new BP01_Scheduler());
+            String jobId = System.schedule('testAccountWithoutOrderNorTaskScheduler',
+                                            AccountWithoutOrderNorTaskScheduler.CRON_EXP,
+                                            new AccountWithoutOrderNorTaskScheduler());
 
             // Get the information from the CronTrigger API object
             CronTrigger ct = [SELECT Id, CronExpression, TimesTriggered, 
@@ -33,7 +35,7 @@ class BP01_Scheduler_Test {
                 FROM CronTrigger WHERE id = :jobId];
 
             // Verify the expressions are the same
-            System.assertEquals(BP01_Scheduler.CRON_EXP, 
+            System.assertEquals(AccountWithoutOrderNorTaskScheduler.CRON_EXP, 
                 ct.CronExpression);
 
             // Verify the job has not run
@@ -43,7 +45,7 @@ class BP01_Scheduler_Test {
             System.assertEquals(calculateNextFirstMondayOfTheMonth(),ct.NextFireTime,'La date de prochain lancement est erronée');
 
         Test.stopTest();
-        System.debug('BP01_Scheduler_Test AFTER STOPTEST');
+        System.debug('AccountWithoutOrderNorTaskScheduler_Test AFTER STOPTEST');
     }
 
     private static Datetime calculateNextFirstMondayOfTheMonth() {

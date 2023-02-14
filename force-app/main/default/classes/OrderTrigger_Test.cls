@@ -15,16 +15,16 @@ private class OrderTrigger_Test {
         Id customPBEId = TestDataFactory.createPriceBookEntryWithCustomPrice(customPBId, prodId, 100);
  
         // create 2 orders without product on the account with shipmentcost of 10
-        List<Order> orderswithout = TestDataFactory.createOrdersOnAccount(acc.Id, 'Commande sans produit', 2, customPBId, 10);
+        List<Order> ordersWithout = TestDataFactory.createOrdersOnAccount(acc.Id, 'Commande sans produit', 2, customPBId, 10);
  
         // create 2 order with product on the account with shipmentcost of 10
-        List<Order> orderswith = TestDataFactory.createOrdersOnAccount(acc.Id, 'Commande avec produit', 2, customPBId, 10);
+        List<Order> ordersWith = TestDataFactory.createOrdersOnAccount(acc.Id, 'Commande avec produit', 2, customPBId, 10);
 
         // create orderItem on the order with quantity of 1O and unitPrice of 100
-        List<OrderItem> orderItems = TestDataFactory.createOrderItemsOnOrders(orderswith, 10, 100, customPBEId);    
+        List<OrderItem> orderItems = TestDataFactory.createOrderItemsOnOrders(ordersWith, 10, 100, customPBEId);    
     }
 
-    @isTest static void ActivateOrdersWithoutProductIsForbidden() {
+    @isTest static void activateOrdersWithoutProductIsForbidden() {
         // Get the order without product
         List<Order> ords = [SELECT Id FROM Order WHERE Name LIKE 'Commande sans produit%'];
         for (Order ord : ords) {
@@ -53,7 +53,7 @@ private class OrderTrigger_Test {
 
     }
 
-    @isTest static void ActivateOrdersWithProductIsAllowed() {
+    @isTest static void activateOrdersWithProductIsAllowed() {
         // Get the order with product
         List<Order> ords = [SELECT Id FROM Order WHERE Name LIKE 'Commande avec produit%'];
         for (Order ord : ords) {
@@ -79,10 +79,10 @@ private class OrderTrigger_Test {
 
     }
 
-    @isTest static void DeleteAllOrdersMustDeactivateTheAccount() {
+    @isTest static void deleteAllOrdersMustDeactivateTheAccount() {
         // Get the account
         Account acc = [SELECT Id, Name, Active__c FROM Account WHERE Name = 'Test Account' LIMIT 1];
-        System.debug('DeleteAllOrdersMustDeactivateTheAccount Active__c = ' + acc.Active__c);
+        System.debug('deleteAllOrdersMustDeactivateTheAccount Active__c = ' + acc.Active__c);
         // Get all the orders of the account
         List<Order> ords = [SELECT Id FROM Order WHERE AccountId = :acc.Id];
 
@@ -93,7 +93,7 @@ private class OrderTrigger_Test {
         // Verify 
         // In this case the account must be deactivated
         Account accToCheck = [SELECT Id, Name, Active__c FROM Account WHERE Name = 'Test Account' LIMIT 1];
-        System.debug('DeleteAllOrdersMustDeactivateTheAccount Active__c = ' + accToCheck.Active__c);
+        System.debug('deleteAllOrdersMustDeactivateTheAccount Active__c = ' + accToCheck.Active__c);
         System.assert(!accToCheck.Active__c,'Le compte ' + accToCheck.Name + ' devrait être désactivé');
     }
 }

@@ -1,5 +1,5 @@
 @isTest
-private class BP01_AccountWithoutOrderNorTask_Test {
+private class AccountWithoutOrderNorTaskBatch_Test {
     @testSetup static void createData() {
         // Insert a test product.
         Id prodId = TestDataFactory.createTestProduct('Chemise Verte longue XYX', 'Chemise');
@@ -20,7 +20,7 @@ private class BP01_AccountWithoutOrderNorTask_Test {
 
      @isTest static void testBatchMustCreateTwentyTasks() {
         Test.startTest();
-        ID batchprocessid = Database.executeBatch(new BP01_AccountWithoutOrderNorTask());
+        ID batchProcessid = Database.executeBatch(new AccountWithoutOrderNorTaskBatch());
         Test.stopTest();
         // Get the Accounts updated
         List<Task> taskCreated = [SELECT Id, Subject, Status, Priority, IsReminderSet, ReminderDateTime FROM Task WHERE WhatId IN (SELECT Id FROM Account WHERE Name LIKE 'TestBatchAccountWithoutOrderNorTask%')];

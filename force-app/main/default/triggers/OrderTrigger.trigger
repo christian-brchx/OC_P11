@@ -6,7 +6,7 @@ trigger OrderTrigger on Order (before update, after delete) {
                 ordersToCheck.add(ord);
             }
         }
-        Set<Id> idOrdInError = AP01_Services.checkUpdateOrders(new Map<Id,Order>(ordersToCheck));
+        Set<Id> idOrdInError = OrderService.checkUpdateOrders(new Map<Id,Order>(ordersToCheck));
         for (Id idOrd : idOrdInError) {
             trigger.newMap.get(idOrd).addError('Vous devez ajouter un produit pour activer la commande');
         }
@@ -17,6 +17,6 @@ trigger OrderTrigger on Order (before update, after delete) {
         for (Order ord : trigger.old) {
             accountsToCheck.add(ord.AccountId);
         }
-        AP01_Services.checkDeleteOrders(accountsToCheck);
+        OrderService.checkDeleteOrders(accountsToCheck);
     }
 }
